@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.0",
   "x-stoplight": {
-    "id": "t99zfxz2byplx"
+    "id": "i2xhjwciade4x"
   },
   "info": {
     "title": "user-service",
@@ -77,7 +77,7 @@
         "operationId": "get-users-userId",
         "description": "Retrieve the information of the user with the matching user ID.",
         "x-stoplight": {
-          "id": "ucqr1a3j9bpm8"
+          "id": "wcul6veqr7n9w"
         },
         "tags": [
           "users"
@@ -125,7 +125,7 @@
           "$ref": "#/components/requestBodies/Update-User"
         },
         "x-stoplight": {
-          "id": "d8xqc3q5bvakb"
+          "id": "dqr3vb6f9aqpm"
         },
         "tags": [
           "users"
@@ -154,7 +154,7 @@
         },
         "operationId": "delete-users-userId",
         "x-stoplight": {
-          "id": "4p7j5cb31ofmo"
+          "id": "cgpj8d97m9jr3"
         },
         "description": "delete an existing user"
       }
@@ -184,7 +184,7 @@
         },
         "description": "Create a new user.",
         "x-stoplight": {
-          "id": "z3onbukb05c1b"
+          "id": "3w0tufoprk8ta"
         },
         "tags": [
           "users"
@@ -227,7 +227,7 @@
         },
         "operationId": "get-health",
         "x-stoplight": {
-          "id": "j0dmy8sicu4qa"
+          "id": "odmbvyw5fx0vt"
         },
         "description": "Health check endpoint"
       }
@@ -315,13 +315,13 @@
           }
         },
         "x-stoplight": {
-          "id": "jbv6eswz2s12r"
+          "id": "je9ws2tjpx3rv"
         }
       },
       "Duration": {
         "title": "Duration",
         "x-stoplight": {
-          "id": "ic0cf7bl16w1m"
+          "id": "ygef5nglp93om"
         },
         "type": "string",
         "pattern": "^\\d+\\s?(seconds|second|minutes|minute|hours|hour|days|day|weeks|week|months|month|years|year)$",
@@ -366,7 +366,7 @@
         },
         "title": "Error",
         "x-stoplight": {
-          "id": "fpr55duhd0n7c"
+          "id": "o94vc1c00ws2n"
         }
       }
     },
