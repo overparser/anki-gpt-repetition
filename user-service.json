@@ -1,0 +1,570 @@
+{
+  "openapi": "3.0.0",
+  "x-stoplight": {
+    "id": "t99zfxz2byplx"
+  },
+  "info": {
+    "title": "user-service",
+    "version": "0.03",
+    "license": {
+      "name": "MIT",
+      "url": "https://rem.mit-license.org"
+    },
+    "contact": {
+      "name": "Overparser via telegram",
+      "url": "https://t.me/overparser",
+      "email": "derror.dd@gmail.com"
+    },
+    "termsOfService": "",
+    "description": "User Management Service"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8001",
+      "description": "local"
+    }
+  ],
+  "paths": {
+    "/users/{userId}": {
+      "parameters": [
+        {
+          "schema": {
+            "type": "string"
+          },
+          "name": "userId",
+          "in": "path",
+          "required": true,
+          "description": "user id"
+        }
+      ],
+      "get": {
+        "summary": "Get User Info by User ID",
+        "responses": {
+          "200": {
+            "description": "User Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/User"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "user_id": "string",
+                      "telegram_login": "string",
+                      "telegram_id": 0,
+                      "registration_date": "2019-08-24T14:15:22Z",
+                      "username": "string",
+                      "status": "active",
+                      "last_updated": "2019-08-24T14:15:22Z",
+                      "default_repeats": [
+                        "300 seconds"
+                      ],
+                      "preferences": {
+                        "language": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/User-Not-Found"
+          }
+        },
+        "operationId": "get-users-userId",
+        "description": "Retrieve the information of the user with the matching user ID.",
+        "x-stoplight": {
+          "id": "ucqr1a3j9bpm8"
+        },
+        "tags": [
+          "users"
+        ]
+      },
+      "patch": {
+        "summary": "Update User Information",
+        "operationId": "patch-users-userId",
+        "responses": {
+          "200": {
+            "description": "User Updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "user_id": "string",
+                      "telegram_login": "string",
+                      "telegram_id": 0,
+                      "registration_date": "2019-08-24T14:15:22Z",
+                      "username": "string",
+                      "status": "active",
+                      "last_updated": "2019-08-24T14:15:22Z",
+                      "default_repeats": [
+                        "300 seconds"
+                      ],
+                      "preferences": {
+                        "language": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/User-Not-Found"
+          }
+        },
+        "description": "Update the information of an existing user.",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Update-User"
+        },
+        "x-stoplight": {
+          "id": "d8xqc3q5bvakb"
+        },
+        "tags": [
+          "users"
+        ]
+      },
+      "delete": {
+        "summary": "Delete User",
+        "tags": [
+          "users"
+        ],
+        "responses": {
+          "200": {
+            "description": "User Deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/User-Not-Found"
+          }
+        },
+        "operationId": "delete-users-userId",
+        "x-stoplight": {
+          "id": "4p7j5cb31ofmo"
+        },
+        "description": "delete an existing user"
+      }
+    },
+    "/user": {
+      "post": {
+        "summary": "Create New User",
+        "operationId": "post-user",
+        "responses": {
+          "201": {
+            "description": "Shared Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Bad-Request"
+          }
+        },
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Create-User"
+        },
+        "description": "Create a new user.",
+        "x-stoplight": {
+          "id": "z3onbukb05c1b"
+        },
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health Check",
+        "tags": [
+          "health"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "x-stoplight": {
+                        "id": "ignrpvqdev3ku"
+                      },
+                      "default": "OK"
+                    }
+                  }
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "status": "OK"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get-health",
+        "x-stoplight": {
+          "id": "j0dmy8sicu4qa"
+        },
+        "description": "Health check endpoint"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "x-examples": {
+          "Example 2": {
+            "user_id": "string",
+            "telegram_login": "string",
+            "telegram_id": 0,
+            "registration_date": "2019-08-24T14:15:22Z",
+            "username": "string",
+            "status": "active",
+            "last_updated": "2019-08-24T14:15:22Z",
+            "default_repeats": [
+              "300 seconds",
+              "5 minutes",
+              "1 hour",
+              "2 hours",
+              "6 hours",
+              "1 day",
+              "2 days"
+            ],
+            "preferences": {
+              "language": "string"
+            }
+          }
+        },
+        "x-tags": [
+          "users"
+        ],
+        "description": "User model",
+        "properties": {
+          "user_id": {
+            "type": "string"
+          },
+          "telegram_login": {
+            "type": "string",
+            "x-stoplight": {
+              "id": "mqb1r91p65ydr"
+            }
+          },
+          "telegram_id": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "registration_date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "username": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "active",
+              "suspended",
+              "banned"
+            ]
+          },
+          "last_updated": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "default_repeats": {
+            "type": "array",
+            "maxItems": 15,
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "$ref": "#/components/schemas/Duration"
+            }
+          },
+          "preferences": {
+            "type": "object",
+            "properties": {
+              "language": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "x-stoplight": {
+          "id": "jbv6eswz2s12r"
+        }
+      },
+      "Duration": {
+        "title": "Duration",
+        "x-stoplight": {
+          "id": "ic0cf7bl16w1m"
+        },
+        "type": "string",
+        "pattern": "^\\d+\\s?(seconds|second|minutes|minute|hours|hour|days|day|weeks|week|months|month|years|year)$",
+        "example": "300 seconds",
+        "description": "A string representing a duration with specific formats such as \"300 seconds\", \"5 days\", \"1 day\".",
+        "x-examples": {
+          "Example 1": "300 seconds",
+          "Example 2": "300 minutes",
+          "Example 3": "1 day",
+          "Example 5": "1 month",
+          "Example 6": "2 months",
+          "Example 4": "2 years",
+          "Example 7": "2 hours"
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "integer"
+              },
+              "message": {
+                "type": "string"
+              },
+              "details": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "x-examples": {
+          "Example 1": {
+            "error": {
+              "code": 0,
+              "message": "string",
+              "details": "string"
+            }
+          }
+        },
+        "title": "Error",
+        "x-stoplight": {
+          "id": "fpr55duhd0n7c"
+        }
+      }
+    },
+    "requestBodies": {
+      "Create-User": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/User"
+                },
+                {
+                  "x-stoplight": {
+                    "id": "o2lo8h2hthjmm"
+                  },
+                  "required": [
+                    "telegram_id"
+                  ],
+                  "properties": {
+                    "telegram_id": {
+                      "type": "integer",
+                      "x-stoplight": {
+                        "id": "b65cwxb2sbo4z"
+                      },
+                      "format": "int64"
+                    },
+                    "registration_date": {
+                      "type": "string",
+                      "x-stoplight": {
+                        "id": "8c81cncocq0b2"
+                      },
+                      "format": "date-time",
+                      "readOnly": true
+                    },
+                    "last_update": {
+                      "type": "string",
+                      "x-stoplight": {
+                        "id": "g6ucd2qtcw648"
+                      },
+                      "format": "date-time",
+                      "readOnly": true
+                    }
+                  }
+                }
+              ],
+              "type": "object"
+            },
+            "examples": {
+              "Example 1": {
+                "value": {
+                  "user_id": "string",
+                  "telegram_login": "string",
+                  "telegram_id": 6453843256,
+                  "registration_date": "2019-08-24T14:15:22Z",
+                  "username": "string",
+                  "status": "active",
+                  "last_updated": "2019-08-24T14:15:22Z",
+                  "default_repeats": [
+                    "300 seconds"
+                  ],
+                  "preferences": {
+                    "language": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "Update-User": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/User"
+                },
+                {
+                  "x-stoplight": {
+                    "id": "wijwstczum7mb"
+                  },
+                  "properties": {
+                    "telegram_id": {
+                      "type": "integer",
+                      "x-stoplight": {
+                        "id": "xyfmt6f12i63f"
+                      }
+                    },
+                    "registration_date": {
+                      "type": "string",
+                      "x-stoplight": {
+                        "id": "cis2k76i7mj2j"
+                      },
+                      "format": "date-time",
+                      "readOnly": true
+                    },
+                    "last_update": {
+                      "type": "string",
+                      "x-stoplight": {
+                        "id": "gcpbvcc2vd7mk"
+                      },
+                      "format": "date-time",
+                      "readOnly": true
+                    }
+                  }
+                }
+              ],
+              "type": "object"
+            }
+          }
+        },
+        "description": "Update user information"
+      }
+    },
+    "responses": {
+      "User-Not-Found": {
+        "description": "User not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "details": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "x-examples": {
+                "Example 1": {
+                  "error": {
+                    "code": 400,
+                    "message": "Missing required information",
+                    "details": "The 'email' and 'password' fields are required but were not provided."
+                  }
+                }
+              }
+            },
+            "examples": {
+              "Example 1": {
+                "value": {
+                  "error": {
+                    "code": 404,
+                    "message": "Resource not found",
+                    "details": "User with ID '12345' does not exist."
+                  }
+                }
+              },
+              "Example 2": {
+                "value": {
+                  "error": {
+                    "code": 400,
+                    "message": "Missing required information",
+                    "details": "The 'telegram_id' field are required but were not provided."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "Bad-Request": {
+        "description": "Bad request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "$ref": "#/components/schemas/Error"
+            },
+            "examples": {
+              "Example 1": {
+                "value": {
+                  "code": 400,
+                  "message": "Validation failed",
+                  "details": "The 'email' field must be a valid email address."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "users",
+      "description": "End-user information and managment"
+    }
+  ],
+  "x-internal": false
+}
