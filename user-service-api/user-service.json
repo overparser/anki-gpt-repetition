@@ -562,8 +562,12 @@
   },
   "tags": [
     {
+      "name": "health",
+      "description": "Health check"
+    },
+    {
       "name": "users",
-      "description": "End-user information and managment"
+      "description":"End-user information"
     }
   ],
   "x-internal": false
