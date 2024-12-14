@@ -78,9 +78,11 @@ jobs:
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.CODE_GENERATION_PAT }}
+          repository: overparser/python-user-service-client
           branch: update-user-service-api
           base: main
           title: "Update Python client from user-service-api"
           body: "This PR updates the Python client based on the latest API specification."
           commit-message: "Update Python client from user-service-api"
           overwrite: false
+
