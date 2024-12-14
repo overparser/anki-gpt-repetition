@@ -6,83 +6,68 @@ on:
       - main
     paths:
       - "user-service-api/**"
+  workflow_dispatch:
 
 jobs:
   generate-client:
     runs-on: ubuntu-latest
-
     steps:
-      # Step 1: Clone the anki-gpt-repetition repository to check for changes
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      # Step 2: Check if there are changes in the user-service-api directory
-      - name: Check changes in user-service-api
-        id: check_changes
+      # Step 1: Download the bundled OpenAPI specification
+      - name: Download bundled OpenAPI specification
         run: |
-          CHANGED=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^user-service-api/' || echo '')
-          if [ -z "$CHANGED" ]; then
-            echo "No changes in user-service-api. Exiting."
-            exit 0
-          fi
+          curl -o bundled-user-service.json "https://api.stoplight.io/projects/cHJqOjI2NzEyNA/branches/main/export/user-service-api/user-service.json"
+          ls -la
 
-      # Step 3: Set up Java (required for openapi-generator-cli)
+      # Step 2: Set up Java for openapi-generator
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
           java-version: '11'
           distribution: 'temurin'
 
-      # Step 4: Install a specific version of openapi-generator-cli
+      # Step 3: Install openapi-generator-cli
       - name: Install openapi-generator-cli
         run: |
           curl -L https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/7.10.0/openapi-generator-cli-7.10.0.jar -o openapi-generator-cli.jar
-          alias openapi-generator-cli="java -jar $(pwd)/openapi-generator-cli.jar"
 
-      # Step 5: Clone the python-user-service-client repository into a subdirectory
-      - name: Checkout python-user-service-client repository
-        uses: actions/checkout@v3
-        with:
-          repository: overparser/python-user-service-client
-          token: ${{ secrets.CODE_GENERATION_PAT }}
-          path: python-user-service-client
-          fetch-depth: 0
-
-      # Step 6: Generate Python client code using python-pydantic-v1
-      - name: Generate Python client code
-        working-directory: python-user-service-client
+      # Step 4: Clone the python-user-service-client repository
+      - name: Clone python-user-service-client
         run: |
-          java -jar ../openapi-generator-cli.jar generate \
-            -i ../user-service-api/user-service.json \
+          git clone https://$GITHUB_ACTOR:${{ secrets.CODE_GENERATION_PAT }}@github.com/overparser/python-user-service-client.git python-user-service-client
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+
+      # Step 5: Generate Python client code directly into the client repository
+      - name: Generate Python client code
+        run: |
+          java -jar openapi-generator-cli.jar generate \
+            -i bundled-user-service.json \
             -g python-pydantic-v1 \
-            -o . \
+            -o python-user-service-client \
             --library asyncio
 
-      # Step 7: Configure Git inside the python-user-service-client directory
-      - name: Configure Git
-        working-directory: python-user-service-client
+      # Step 6: Commit and push changes
+      - name: Commit and push changes
         run: |
+          cd python-user-service-client
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      # Step 8: Commit changes if any
-      - name: Commit changes
-        working-directory: python-user-service-client
-        run: |
           git add .
           git diff --cached --quiet || git commit -m "Update Python client from user-service-api"
+          git push origin HEAD:update-user-service-api --force
 
-      # Step 9: Create a Pull Request
-      # If a PR already exists for the same branch, this step will fail (overwrite=false)
+      # Step 7: Install GitHub CLI and create a Pull Request
+      - name: Install GitHub CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gh
+
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.CODE_GENERATION_PAT }}
-          repository: overparser/python-user-service-client
-          branch: update-user-service-api
-          base: main
-          title: "Update Python client from user-service-api"
-          body: "This PR updates the Python client based on the latest API specification."
-          commit-message: "Update Python client from user-service-api"
-          overwrite: false
-
+        run: |
+          cd python-user-service-client
+          echo "${{ secrets.CODE_GENERATION_PAT }}" | gh auth login --with-token
+          gh pr create --repo overparser/python-user-service-client \
+            --base main \
+            --head update-user-service-api \
+            --title "Update Python client from user-service-api" \
+            --body "This PR updates the Python client based on the latest API specification."
