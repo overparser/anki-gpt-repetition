@@ -6,74 +6,67 @@ on:
       - main
     paths:
       - "user-service-api/**"
+  workflow_dispatch:
 
 jobs:
   generate-client:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Clone the anki-gpt-repetition repository to check for changes
-      - name: Checkout repository
+      # Шаг 1: Проверяем изменения в user-service-api
+      - name: Checkout main repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-      # Step 2: Check if there are changes in the user-service-api directory
       - name: Check changes in user-service-api
-        id: check_changes
         run: |
-          CHANGED=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^user-service-api/' || echo '')
-          if [ -z "$CHANGED" ]; then
-            echo "No changes in user-service-api. Exiting."
-            exit 0
+          if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
+            echo "First commit detected, treating as changed."
+          else
+            CHANGED=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^user-service-api/' || echo '')
+            if [ -z "$CHANGED" ]; then
+              echo "No changes in user-service-api. Exiting."
+              exit 0
+            fi
           fi
 
-      # Step 3: Set up Java (required for openapi-generator-cli)
+      # Шаг 2: Настройка окружения и генерация кода (пример)
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
           java-version: '11'
           distribution: 'temurin'
 
-      # Step 4: Install a specific version of openapi-generator-cli
       - name: Install openapi-generator-cli
         run: |
           curl -L https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/7.10.0/openapi-generator-cli-7.10.0.jar -o openapi-generator-cli.jar
-          alias openapi-generator-cli="java -jar $(pwd)/openapi-generator-cli.jar"
 
-      # Step 5: Clone the python-user-service-client repository into a subdirectory
-      - name: Checkout python-user-service-client repository
-        uses: actions/checkout@v3
-        with:
-          repository: overparser/python-user-service-client
-          token: ${{ secrets.CODE_GENERATION_PAT }}
-          path: python-user-service-client
-          fetch-depth: 0
-
-      # Step 6: Generate Python client code using python-pydantic-v1
       - name: Generate Python client code
-        working-directory: python-user-service-client
         run: |
-          java -jar ../openapi-generator-cli.jar generate \
-            -i ../user-service-api/user-service.json \
+          java -jar openapi-generator-cli.jar generate \
+            -i user-service-api/user-service.json \
             -g python-pydantic-v1 \
-            -o . \
+            -o generated_client \
             --library asyncio
+          # Здесь сгенерированный код находится в директории generated_client
 
-      # Step 7: Configure Git inside the python-user-service-client directory
+      # Шаг 3: Настройка Git локально (для фиктивного коммита, если нужно)
       - name: Configure Git
-        working-directory: python-user-service-client
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      # Step 8: Commit changes if any
-      - name: Commit changes
-        working-directory: python-user-service-client
-        run: |
-          git add .
-          git diff --cached --quiet || git commit -m "Update Python client from user-service-api"
+          # Если нужно, вы можете попробовать перенести сгенерированный код в текущую директорию,
+          # чтобы 'create-pull-request' увидел изменения. Однако, при указании repository:
+          # экшен перезатирает рабочую директорию клонированием целевого репо.
+          # В таком случае изменения должны быть сделаны непосредственно после клонирования целевого репо,
+          # что невозможно, так как экшен делает всё в один шаг.
 
-      # Step 9: Create a Pull Request
-      # If a PR already exists for the same branch, this step will fail (overwrite=false)
+      # Шаг 4: Создание Pull Request в overparser/python-user-service-client
+      # Внимание: 'create-pull-request' при указании repository: перезатрет workspace клонированием репозитория клиента
+      # и попытается закоммитить изменения. Если вы хотите изменения в целевом репозитории,
+      # их нужно каким-то образом подготовить заранее или рассмотреть альтернативный подход.
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
@@ -85,4 +78,3 @@ jobs:
           body: "This PR updates the Python client based on the latest API specification."
           commit-message: "Update Python client from user-service-api"
           overwrite: false
-
