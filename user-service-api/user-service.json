@@ -156,7 +156,7 @@
         "x-stoplight": {
           "id": "cgpj8d97m9jr3"
         },
-        "description": "Delete an existing user."
+        "description": "Delete an existing user"
       }
     },
     "/user": {
